@@ -4,10 +4,11 @@ import os
 import sys
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_chroma import Chroma
-#from langchain.text_splitter import RecursiveCharacterTextSplitter
-#from langchain.docstore.document import Document
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_core.documents import Document
 from dotenv import load_dotenv
-import google.generativeai as genai
+from google import genai
+
 
 # Configuração da chave da API do Gemini
 # Carrega o arquivo .env
@@ -17,7 +18,7 @@ load_dotenv()
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 if not GEMINI_API_KEY:
     raise ValueError("A chave GEMINI_API_KEY não foi configurada!")
-genai.configure(api_key=GEMINI_API_KEY)
+client = genai.Client(api_key="GEMINI_API_KEY")
 
 # Configurações de pastas locais
 txt_folder = "txt_files"  # Diretório com os arquivos TXT para leitura
@@ -109,13 +110,13 @@ def get_relevant_context_from_db(query):
 
 # Função para gerar resposta
 def generate_answer(prompt):
-    model = genai.GenerativeModel(model_name='gemini-pro')
-    answer = model.generate_content(prompt)
+    #model = genai.Client()
+    #answer = model.generate_content(prompt)
     return answer.text
 
 
 
-@app.route('/chatSAC', methods ['POST'])
+@app.route('/chatSAC', methods=['POST'])
 def chatSAC():
     #lógica de resposta verificando se há cardápio no sistema
     data = request.get_json()

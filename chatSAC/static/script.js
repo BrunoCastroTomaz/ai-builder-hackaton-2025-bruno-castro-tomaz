@@ -13,7 +13,7 @@ inputField.addEventListener("keypress", function (e) {
     if (e.key === "Enter") sendMessage();
 });
 
-/*async*/ function sendMessage() {
+async function sendMessage() {
     const userInput = inputField.value.trim();
 
     if (userInput) {
@@ -26,8 +26,8 @@ inputField.addEventListener("keypress", function (e) {
 
     try {
         // Chama a API para gerar a resposta do bot
-        //const response = await generateBotResponse(userInput);
-        const response = "legal"
+        const response = await generateBotResponse(userInput);
+        //const response = "legal"
         addMessage(response, "bot"); // Adiciona a resposta do bot ao chat
     } catch (error) {
         console.log(error); // Para depuração adicional
