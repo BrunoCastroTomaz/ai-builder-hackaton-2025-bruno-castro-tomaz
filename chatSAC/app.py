@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify, render_template, url_for
 from flask_cors import CORS
+import base64
 import os
 import sys
 from langchain_huggingface import HuggingFaceEmbeddings
@@ -8,7 +9,7 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document
 from dotenv import load_dotenv
 from google import genai
-
+from google.genai import types
 
 # Configuração da chave da API do Gemini
 # Carrega o arquivo .env
@@ -18,7 +19,6 @@ load_dotenv()
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 if not GEMINI_API_KEY:
     raise ValueError("A chave GEMINI_API_KEY não foi configurada!")
-client = genai.Client(api_key="GEMINI_API_KEY")
 
 # Configurações de pastas locais
 txt_folder = "txt_files"  # Diretório com os arquivos TXT para leitura
@@ -108,12 +108,48 @@ def get_relevant_context_from_db(query):
         context += result.page_content + "\n"
     return context
 
-# Função para gerar resposta
-def generate_answer(prompt):
-    #model = genai.Client()
-    #answer = model.generate_content(prompt)
-    return answer.text
+# Função para gerar resposta usando streaming do Gemini
+def generate_answer(prompt: str) -> str:
+    """
+    Gera uma resposta do modelo Gemini em modo streaming e retorna a string completa.
+    """
+    client = genai.Client(
+        api_key=os.environ.get("GEMINI_API_KEY"),
+    )
 
+    # Use o modelo fornecido no seu código
+    model = "gemini-flash-latest" 
+    
+    # Prepara o conteúdo com o prompt RAG
+    contents = [
+        types.Content(
+            role="user",
+            parts=[
+                types.Part.from_text(text=prompt),
+            ],
+        ),
+    ]
+    
+    # Configuração de geração (incluindo thinking_config)
+    generate_content_config = types.GenerateContentConfig(
+        thinking_config = types.ThinkingConfig(
+            thinking_budget=-1,
+        ),
+    )
+
+    full_answer = ""
+    
+    # Chama o modelo em modo streaming
+    for chunk in client.models.generate_content_stream(
+        model=model,
+        contents=contents,
+        config=generate_content_config,
+    ):
+        # Concatena os pedaços de texto em uma única string
+        full_answer += chunk.text
+    
+    # Retorna a resposta completa
+    return full_answer
 
 
 @app.route('/chatSAC', methods=['POST'])
@@ -126,6 +162,7 @@ def chatSAC():
     try:
         context = get_relevant_context_from_db(prompt)#query
         rag_prompt = generate_rag_prompt(query=prompt, context=context)
+        # Chama a função generate_answer (agora implementada com streaming)
         answer = generate_answer(prompt=rag_prompt)
         return jsonify({"answer": answer})
     except Exception as e:
@@ -149,4 +186,3 @@ def reset_embeddings():
 
 if __name__ == '__main__':    
     app.run(debug=True)
-
