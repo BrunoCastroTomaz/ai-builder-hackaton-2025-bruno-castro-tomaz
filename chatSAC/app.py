@@ -10,6 +10,8 @@ from langchain_core.documents import Document
 from dotenv import load_dotenv
 from google import genai
 from google.genai import types
+import uuid # Módulo para gerar um ID único de sessão
+import json # Para lidar com a serialização do histórico
 
 # Configuração da chave da API do Gemini
 # Carrega o arquivo .env
@@ -35,7 +37,7 @@ text = ""
 if not os.path.exists("./chroma_db_nccn") or not os.listdir("./chroma_db_nccn"):
     
     # Tentando ler e processar os documentos apenas uma vez
-    #Itera sobre todos os arquivos na pasta com a extensao .txt
+    # Itera sobre todos os arquivos na pasta com a extensao .txt
     for txt_name in os.listdir(txt_folder):
         if txt_name.endswith('.txt'):
             print(f"Lendo arquivo TXT: {txt_name}")
@@ -70,6 +72,8 @@ vectorstore = Chroma(persist_directory="./chroma_db_nccn", embedding_function=em
 #app = Flask(__name__)
 app = Flask(__name__, static_folder='static', template_folder='templates')
 CORS(app)
+# Para usar 'session' no Flask (necessário para um ID de sessão estável), você precisa de uma chave secreta
+app.secret_key = os.urandom(24)
 
 last_answer = ""
 
@@ -96,6 +100,7 @@ def generate_rag_prompt(query, context, last_answer=""):
     
     **Resposta:**
     """
+    
     return prompt
 
 # Função para buscar contexto relevante no banco de vetores
