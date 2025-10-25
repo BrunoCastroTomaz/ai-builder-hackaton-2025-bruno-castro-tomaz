@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, jsonify
 
 cardapio = [
     'portuguesa',
@@ -13,7 +13,7 @@ cardapio = [
 app = Flask(__name__, static_folder='static', template_folder='templates')
 
 
-@app.route('/chatSAC', methods['POST'])
+@app.route('/chatSAC')
 def chatSAC():
     #lógica de resposta verificando se há cardápio no sistema
     data = request.get_json()
