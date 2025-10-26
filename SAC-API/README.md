@@ -1,6 +1,6 @@
 # SAC-CDC - Atendimento automático para o Consumidor
 
-<img src="./image.png" alt="Interface do projeto" width="100">
+![Interface do projeto](./image.png)
 
 ## link de demonstração
 https://youtu.be/ePZiamxFapw
