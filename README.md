@@ -19,7 +19,3 @@ https://youtu.be/ePZiamxFapw
 flask --app main run
 
 Acesse `http://127.0.0.1:5000/chat`
-
-## Endpoints
-- `POST /ask` — body: `{ "question": "..." }` → resposta JSON `{ "answer": "...", "source": "..." }`
-- `GET /chat` — interface web
