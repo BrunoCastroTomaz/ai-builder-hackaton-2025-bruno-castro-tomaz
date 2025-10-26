@@ -1,0 +1,6 @@
+# Variáveis de Ambiente
+.env
+.env.local
+.env.*.local
+
+

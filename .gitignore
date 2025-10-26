@@ -1,8 +1,0 @@
-# Variáveis de Ambiente
-.env
-.env.local
-.env.*.local
-
-# Ignora o diretório de persistência padrão do Chroma DB
-./chroma_db_nccn
-
